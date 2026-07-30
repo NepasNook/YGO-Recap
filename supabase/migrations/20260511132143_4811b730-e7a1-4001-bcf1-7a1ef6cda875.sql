@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.advance_tournament_winner() FROM PUBLIC, anon, authenticated;

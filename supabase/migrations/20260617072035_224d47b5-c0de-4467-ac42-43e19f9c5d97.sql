@@ -1,0 +1,1 @@
+ALTER TABLE public.duel_lp_logs ADD COLUMN IF NOT EXISTS note text;

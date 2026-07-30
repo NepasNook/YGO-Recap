@@ -1,0 +1,1 @@
+ALTER VIEW public.user_stats SET (security_invoker = on);
