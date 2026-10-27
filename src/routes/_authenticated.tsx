@@ -13,8 +13,7 @@ function AuthenticatedLayout() {
     if (!loading && !user) navigate({ to: "/login" });
   }, [user, loading, navigate]);
 
-  if (loading)
-    return <div className="py-20 text-center text-muted-foreground">Drawing your hand…</div>;
+  if (loading) return <div className="py-20 text-center text-muted-foreground">Drawing your hand…</div>;
   if (!user) return null;
   return <Outlet />;
 }

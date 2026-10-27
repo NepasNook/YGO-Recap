@@ -9,27 +9,33 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TournamentsRouteImport } from './routes/tournaments'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TournamentsIndexRouteImport } from './routes/tournaments.index'
-import { Route as UUsernameRouteImport } from './routes/u.$username'
-import { Route as TournamentsIdRouteImport } from './routes/tournaments.$id'
-import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as H2hRouteImport } from './routes/h2h'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as TournamentsRouteImport } from './routes/tournaments'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedDuelNewRouteImport } from './routes/_authenticated/duel.new'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as TournamentsIndexRouteImport } from './routes/tournaments.index'
+import { Route as TournamentsIdRouteImport } from './routes/tournaments.$id'
+import { Route as UUsernameRouteImport } from './routes/u.$username'
 import { Route as AuthenticatedDuelIdRouteImport } from './routes/_authenticated/duel.$id'
+import { Route as AuthenticatedDuelNewRouteImport } from './routes/_authenticated/duel.new'
+import { Route as AuthenticatedDuelQuickRouteImport } from './routes/_authenticated/duel.quick'
 
-const TournamentsRoute = TournamentsRouteImport.update({
-  id: '/tournaments',
-  path: '/tournaments',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const H2hRoute = H2hRouteImport.update({
+  id: '/h2h',
+  path: '/h2h',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -37,18 +43,34 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const TournamentsRoute = TournamentsRouteImport.update({
+  id: '/tournaments',
+  path: '/tournaments',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const TournamentsIndexRoute = TournamentsIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => TournamentsRoute,
+} as any)
+const TournamentsIdRoute = TournamentsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
   getParentRoute: () => TournamentsRoute,
 } as any)
 const UUsernameRoute = UUsernameRouteImport.update({
@@ -56,19 +78,9 @@ const UUsernameRoute = UUsernameRouteImport.update({
   path: '/u/$username',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TournamentsIdRoute = TournamentsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => TournamentsRoute,
-} as any)
-const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const AuthenticatedDuelIdRoute = AuthenticatedDuelIdRouteImport.update({
+  id: '/duel/$id',
+  path: '/duel/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDuelNewRoute = AuthenticatedDuelNewRouteImport.update({
@@ -76,14 +88,15 @@ const AuthenticatedDuelNewRoute = AuthenticatedDuelNewRouteImport.update({
   path: '/duel/new',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedDuelIdRoute = AuthenticatedDuelIdRouteImport.update({
-  id: '/duel/$id',
-  path: '/duel/$id',
+const AuthenticatedDuelQuickRoute = AuthenticatedDuelQuickRouteImport.update({
+  id: '/duel/quick',
+  path: '/duel/quick',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/h2h': typeof H2hRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/tournaments': typeof TournamentsRouteWithChildren
@@ -94,9 +107,11 @@ export interface FileRoutesByFullPath {
   '/tournaments/': typeof TournamentsIndexRoute
   '/duel/$id': typeof AuthenticatedDuelIdRoute
   '/duel/new': typeof AuthenticatedDuelNewRoute
+  '/duel/quick': typeof AuthenticatedDuelQuickRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/h2h': typeof H2hRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -106,11 +121,13 @@ export interface FileRoutesByTo {
   '/tournaments': typeof TournamentsIndexRoute
   '/duel/$id': typeof AuthenticatedDuelIdRoute
   '/duel/new': typeof AuthenticatedDuelNewRoute
+  '/duel/quick': typeof AuthenticatedDuelQuickRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/h2h': typeof H2hRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/tournaments': typeof TournamentsRouteWithChildren
@@ -121,11 +138,13 @@ export interface FileRoutesById {
   '/tournaments/': typeof TournamentsIndexRoute
   '/_authenticated/duel/$id': typeof AuthenticatedDuelIdRoute
   '/_authenticated/duel/new': typeof AuthenticatedDuelNewRoute
+  '/_authenticated/duel/quick': typeof AuthenticatedDuelQuickRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/h2h'
     | '/login'
     | '/signup'
     | '/tournaments'
@@ -136,9 +155,11 @@ export interface FileRouteTypes {
     | '/tournaments/'
     | '/duel/$id'
     | '/duel/new'
+    | '/duel/quick'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/h2h'
     | '/login'
     | '/signup'
     | '/admin'
@@ -148,10 +169,12 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/duel/$id'
     | '/duel/new'
+    | '/duel/quick'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/h2h'
     | '/login'
     | '/signup'
     | '/tournaments'
@@ -162,11 +185,13 @@ export interface FileRouteTypes {
     | '/tournaments/'
     | '/_authenticated/duel/$id'
     | '/_authenticated/duel/new'
+    | '/_authenticated/duel/quick'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  H2hRoute: typeof H2hRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
   TournamentsRoute: typeof TournamentsRouteWithChildren
@@ -175,25 +200,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tournaments': {
-      id: '/tournaments'
-      path: '/tournaments'
-      fullPath: '/tournaments'
-      preLoaderRoute: typeof TournamentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -203,18 +214,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/h2h': {
+      id: '/h2h'
+      path: '/h2h'
+      fullPath: '/h2h'
+      preLoaderRoute: typeof H2hRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments': {
+      id: '/tournaments'
+      path: '/tournaments'
+      fullPath: '/tournaments'
+      preLoaderRoute: typeof TournamentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/tournaments/': {
       id: '/tournaments/'
       path: '/'
       fullPath: '/tournaments/'
       preLoaderRoute: typeof TournamentsIndexRouteImport
+      parentRoute: typeof TournamentsRoute
+    }
+    '/tournaments/$id': {
+      id: '/tournaments/$id'
+      path: '/$id'
+      fullPath: '/tournaments/$id'
+      preLoaderRoute: typeof TournamentsIdRouteImport
       parentRoute: typeof TournamentsRoute
     }
     '/u/$username': {
@@ -224,25 +277,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UUsernameRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tournaments/$id': {
-      id: '/tournaments/$id'
-      path: '/$id'
-      fullPath: '/tournaments/$id'
-      preLoaderRoute: typeof TournamentsIdRouteImport
-      parentRoute: typeof TournamentsRoute
-    }
-    '/_authenticated/profile': {
-      id: '/_authenticated/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AuthenticatedProfileRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+    '/_authenticated/duel/$id': {
+      id: '/_authenticated/duel/$id'
+      path: '/duel/$id'
+      fullPath: '/duel/$id'
+      preLoaderRoute: typeof AuthenticatedDuelIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/duel/new': {
@@ -252,11 +291,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDuelNewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/duel/$id': {
-      id: '/_authenticated/duel/$id'
-      path: '/duel/$id'
-      fullPath: '/duel/$id'
-      preLoaderRoute: typeof AuthenticatedDuelIdRouteImport
+    '/_authenticated/duel/quick': {
+      id: '/_authenticated/duel/quick'
+      path: '/duel/quick'
+      fullPath: '/duel/quick'
+      preLoaderRoute: typeof AuthenticatedDuelQuickRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
   }
@@ -267,6 +306,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedDuelIdRoute: typeof AuthenticatedDuelIdRoute
   AuthenticatedDuelNewRoute: typeof AuthenticatedDuelNewRoute
+  AuthenticatedDuelQuickRoute: typeof AuthenticatedDuelQuickRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -274,6 +314,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedDuelIdRoute: AuthenticatedDuelIdRoute,
   AuthenticatedDuelNewRoute: AuthenticatedDuelNewRoute,
+  AuthenticatedDuelQuickRoute: AuthenticatedDuelQuickRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -297,6 +338,7 @@ const TournamentsRouteWithChildren = TournamentsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  H2hRoute: H2hRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
   TournamentsRoute: TournamentsRouteWithChildren,

@@ -36,9 +36,15 @@ export function buildRoundRobinRounds(ids: string[]): [string, string | null][][
   return rounds;
 }
 
-export function buildLeagueMatches(playerIds: string[]): MatchInsert[] {
+// `maxRounds`, if given, caps the schedule to the first N rounds instead of
+// the full round-robin (everyone-plays-everyone) — with fewer rounds than
+// players allow, not every pair of players ends up facing each other.
+export function buildLeagueMatches(playerIds: string[], maxRounds?: number): MatchInsert[] {
   const shuffled = [...playerIds].sort(() => Math.random() - 0.5);
-  const rounds = buildRoundRobinRounds(shuffled);
+  let rounds = buildRoundRobinRounds(shuffled);
+  if (maxRounds && maxRounds > 0 && maxRounds < rounds.length) {
+    rounds = rounds.slice(0, maxRounds);
+  }
   const inserts: MatchInsert[] = [];
   rounds.forEach((round, ri) => {
     round.forEach((pair, pi) => {
@@ -55,40 +61,50 @@ export function buildLeagueMatches(playerIds: string[]): MatchInsert[] {
   return inserts;
 }
 
+// Reverses the lowest `bits` bits of `n`: walking positions in this order
+// spreads them evenly across the bracket (0, 2, 1, 3 for 4 slots).
+function bitReverse(n: number, bits: number): number {
+  let r = 0;
+  for (let i = 0; i < bits; i++) r = (r << 1) | ((n >> i) & 1);
+  return r;
+}
+
 export function buildBracketMatches(playerIds: string[]): MatchInsert[] {
   const size = [2, 4, 8, 16, 32, 64, 128].find((n) => n >= playerIds.length) ?? 128;
   const shuffled = [...playerIds].sort(() => Math.random() - 0.5);
-  while (shuffled.length < size) shuffled.push("");
   const rounds = Math.log2(size);
+  const firstRoundCount = size / 2;
+  // Every first-round match gets at least one player: the missing players
+  // become BYEs spread across the bracket, never an empty (TBD vs TBD) match.
+  const byeCount = Math.max(0, size - shuffled.length);
+  const byePositions = new Set<number>();
+  for (let i = 0; byePositions.size < byeCount && i < firstRoundCount; i++) {
+    byePositions.add(bitReverse(i, Math.log2(firstRoundCount)));
+  }
   const inserts: MatchInsert[] = [];
-  for (let i = 0; i < size / 2; i++) {
-    const p1 = shuffled[i * 2] || null;
-    const p2 = shuffled[i * 2 + 1] || null;
-    inserts.push({
-      round: 1,
-      bracket_position: i + 1,
-      player1_id: p1,
-      player2_id: p2,
-      winner_id: !p1 ? p2 : !p2 ? p1 : null,
-    });
+  let next = 0;
+  for (let i = 0; i < firstRoundCount; i++) {
+    const p1 = shuffled[next++] ?? null;
+    const p2 = byePositions.has(i) ? null : shuffled[next++] ?? null;
+    inserts.push({ round: 1, bracket_position: i + 1, player1_id: p1, player2_id: p2, winner_id: p2 === null ? p1 : null });
   }
   for (let r = 2; r <= rounds; r++) {
     const count = size / Math.pow(2, r);
-    for (let i = 0; i < count; i++)
-      inserts.push({
-        round: r,
-        bracket_position: i + 1,
-        player1_id: null,
-        player2_id: null,
-        winner_id: null,
-      });
+    for (let i = 0; i < count; i++) inserts.push({ round: r, bracket_position: i + 1, player1_id: null, player2_id: null, winner_id: null });
+  }
+  // The DB only advances winners when a result is *updated*, so a BYE decided
+  // at insert time would never move on: place those players in round 2 now.
+  if (rounds >= 2) {
+    inserts.filter((m) => m.round === 1 && m.winner_id).forEach((m) => {
+      const target = inserts.find((x) => x.round === 2 && x.bracket_position === Math.ceil(m.bracket_position / 2));
+      if (!target) return;
+      if (m.bracket_position % 2 === 1) target.player1_id = m.winner_id;
+      else target.player2_id = m.winner_id;
+    });
   }
   return inserts;
 }
 
-export function buildTournamentMatches(
-  format: "bracket" | "league",
-  playerIds: string[],
-): MatchInsert[] {
-  return format === "league" ? buildLeagueMatches(playerIds) : buildBracketMatches(playerIds);
+export function buildTournamentMatches(format: "bracket" | "league", playerIds: string[], maxRounds?: number): MatchInsert[] {
+  return format === "league" ? buildLeagueMatches(playerIds, maxRounds) : buildBracketMatches(playerIds);
 }

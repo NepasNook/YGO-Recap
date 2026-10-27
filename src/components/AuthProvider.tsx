@@ -24,49 +24,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const loadProfile = async (uid: string, fallbackEmail: string | null) => {
-    const { data: p } = await supabase
-      .from("profiles")
-      .select("id, username, avatar_url")
-      .eq("id", uid)
-      .maybeSingle();
-    setProfile(p ? ({ ...(p as any), email: fallbackEmail } as Profile) : null);
+    const { data: p } = await supabase.from("profiles").select("id, username, avatar_url").eq("id", uid).maybeSingle();
+    setProfile(p ? { ...p, email: fallbackEmail } : null);
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", uid);
     setIsAdmin(!!roles?.some((r) => r.role === "admin"));
   };
 
   useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_e, s) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
-        setTimeout(() => {
-          loadProfile(s.user.id, s.user.email ?? null);
-        }, 0);
+        setTimeout(() => { loadProfile(s.user.id, s.user.email ?? null); }, 0);
       } else {
-        setProfile(null);
-        setIsAdmin(false);
+        setProfile(null); setIsAdmin(false);
       }
     });
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setUser(data.session?.user ?? null);
-      if (data.session?.user)
-        loadProfile(data.session.user.id, data.session.user.email ?? null).finally(() =>
-          setLoading(false),
-        );
+      if (data.session?.user) loadProfile(data.session.user.id, data.session.user.email ?? null).finally(() => setLoading(false));
       else setLoading(false);
     });
     return () => subscription.unsubscribe();
   }, []);
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-  };
-  const refreshProfile = async () => {
-    if (user) await loadProfile(user.id, user.email ?? null);
-  };
+  const signOut = async () => { await supabase.auth.signOut(); };
+  const refreshProfile = async () => { if (user) await loadProfile(user.id, user.email ?? null); };
 
   return (
     <AuthCtx.Provider value={{ user, session, profile, isAdmin, loading, signOut, refreshProfile }}>
@@ -75,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- the hook belongs with its provider
 export function useAuth() {
   const ctx = useContext(AuthCtx);
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");

@@ -20,9 +20,7 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (user) navigate({ to: "/profile" });
-  }, [user, navigate]);
+  useEffect(() => { if (user) navigate({ to: "/profile" }); }, [user, navigate]);
 
   const handle = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,10 +28,7 @@ function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) toast.error(error.message);
-    else {
-      toast.success("Welcome back, duelist.");
-      navigate({ to: "/profile" });
-    }
+    else { toast.success("Welcome back, duelist."); navigate({ to: "/profile" }); }
   };
 
   return (
@@ -43,37 +38,18 @@ function LoginPage() {
         <form onSubmit={handle} className="space-y-4">
           <div>
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div>
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full gold-gradient text-background hover:opacity-90"
-          >
+          <Button type="submit" disabled={loading} className="w-full gold-gradient text-background hover:opacity-90">
             {loading ? "Signing in…" : "Sign In"}
           </Button>
         </form>
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          New duelist?{" "}
-          <Link to="/signup" className="text-gold hover:underline">
-            Create an account
-          </Link>
+          New duelist? <Link to="/signup" className="text-gold hover:underline">Create an account</Link>
         </p>
       </div>
     </div>

@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791966094250,
+      "tag": "0000_20261014120000_game_formats_goat_edison",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791966104827,
+      "tag": "0001_20261014130000_user_default_decks",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791972065240,
+      "tag": "0002_20261014150000_rename_vayu_turbo",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791972074271,
+      "tag": "0003_20261014160000_english_error_messages",
+      "breakpoints": true
+    }
+  ]
+}
