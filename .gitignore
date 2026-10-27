@@ -16,19 +16,12 @@ dist-ssr
 .nitro
 *.local
 
-# Variabili d'ambiente — il file .env resta in locale, non va versionato.
-# Chi clona il progetto parte da .env.example.
+# Supabase settings stay local (not published)
 .env
-.env.*
-!.env.example
 
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
-
-# Tooling locale
-.lovable/
-.claude/
 
 # Editor directories and files
 .vscode/*
@@ -40,6 +33,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Il progetto usa npm: package-lock.json e' il lockfile di riferimento
-bun.lock

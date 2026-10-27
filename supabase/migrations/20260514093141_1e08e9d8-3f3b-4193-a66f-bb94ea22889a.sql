@@ -1,10 +1,26 @@
 
--- 1-2) Bootstrap del ruolo admin (grant iniziale + trigger di auto-assegnazione):
---      rimossi da questo file perche' contenevano un indirizzo email in chiaro.
---      Sostituiti da 20260722090000_admin_bootstrap_no_pii.sql, che tiene gli
---      indirizzi in private.admin_bootstrap_emails (dato nel DB, non nel repo).
---      Su un database creato da zero non esiste alcun admin preconfigurato:
---      vedi il README per come promuovere il primo utente.
+-- The admin's real email is not published: replace admin@example.com with it
+-- (in both places below) before applying this migration to a new database.
+-- 1) Grant admin role to the admin (existing user)
+INSERT INTO public.user_roles (user_id, role)
+SELECT id, 'admin'::app_role FROM public.profiles WHERE email = 'admin@example.com'
+ON CONFLICT DO NOTHING;
+
+-- 2) Trigger to auto-grant admin to that email on signup (in addition to default 'user')
+CREATE OR REPLACE FUNCTION public.auto_admin_armando()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  IF NEW.email = 'admin@example.com' THEN
+    INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'admin')
+    ON CONFLICT DO NOTHING;
+  END IF;
+  RETURN NEW;
+END; $$;
+
+DROP TRIGGER IF EXISTS auto_admin_armando_trigger ON auth.users;
+CREATE TRIGGER auto_admin_armando_trigger
+AFTER INSERT ON auth.users
+FOR EACH ROW EXECUTE FUNCTION public.auto_admin_armando();
 
 -- 3) Live duel lobby: add status & pending join columns
 ALTER TABLE public.duels
